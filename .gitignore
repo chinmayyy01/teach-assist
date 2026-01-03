@@ -1,0 +1,20 @@
+__pycache__/
+.env
+.venv/
+
+# Generated artifacts
+*.joblib
+*.pkl
+*.json
+output.json
+response.txt
+
+# Media files
+*.mp3
+*.mp4
+*.wav
+
+# Data folders
+videos/
+jsons/
+unused/
