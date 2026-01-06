@@ -65,7 +65,6 @@ with open('prompt.txt', 'w') as f:
 
 # response = inference(prompt)["response"]
 # print(response)
-# This part of your code is now correct, provided the function above is updated
 result_data = inference(prompt)
 response = result_data["response"]
 print(response)
