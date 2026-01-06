@@ -1,8 +1,11 @@
-import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import joblib
 import requests
+from google import genai 
+from config import api_key
+
+client = genai.Client(api_key=api_key)
 
 def create_embedding(text_list):
     r = requests.post("http://localhost:11434/api/embed", json={
@@ -13,17 +16,29 @@ def create_embedding(text_list):
     embedding = r.json()["embeddings"] 
     return embedding
 
+# When you wanna use llama model locally use this function
+# def inference(prompt):
+#     r = requests.post("http://localhost:11434/api/generate", json={
+#         "model": "llama3.2",
+#         "prompt": prompt,
+#         "stream": False,
+#     })
+    
+#     response = r.json()
+#     print(response)
+    
+#     return response
+
+#Using Gemini model from Google Cloud
 def inference(prompt):
-    r = requests.post("http://localhost:11434/api/generate", json={
-        "model": "llama3.2",
-        "prompt": prompt,
-        "stream": False,
-    })
-    
-    response = r.json()
-    print(response)
-    
-    return response
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
+        return {"response": response.text}
+    except Exception as e:
+        return {"response": f"An error occurred: {str(e)}"}
 
 df = joblib.load('embeddings.joblib')
 
@@ -48,10 +63,14 @@ User asked this question related to the video chunks, you have to answer in a hu
 with open('prompt.txt', 'w') as f:
     f.write(prompt)
 
-response = inference(prompt)["response"]
+# response = inference(prompt)["response"]
+# print(response)
+# This part of your code is now correct, provided the function above is updated
+result_data = inference(prompt)
+response = result_data["response"]
 print(response)
 
-with open('response.txt', 'w') as f:
+with open('response.txt', 'w', encoding='utf-8') as f:
     f.write(response)
 # for index, item in new_df.iterrows():
 #     print(index, item['title'], item['number'], item['text'], item['start'], item['end'])
